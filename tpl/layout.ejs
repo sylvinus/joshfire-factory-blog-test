@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title><%= title %></title>
+    <title><%= options.title %></title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -16,10 +16,10 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <link href="bootstrap/css/bootstrap-journal.css" rel="stylesheet">
-    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="bootstrap/css/docs.css" rel="stylesheet">
-    <link href="css/sz.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap-journal.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/bootstrap/css/docs.css" rel="stylesheet">
+    <link href="/css/sz.css" rel="stylesheet">
 
   </head>
 
@@ -36,11 +36,12 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
        </a>
-       <a class="brand" href="/">Sylvain Zimmer</a>
+       <a class="brand" href="/"><%= options.title %></a>
        <div class="nav-collapse">
          <ul class="nav">
-           <li><a href="/">Blog</a></li>
-           <li><a href="/projects">Projects</a></li>
+           <% _.each(options.maintabtitles,function(title,i) { %>
+            <li><a href="<%= options.maintaburls[i].replace(/\*$/,'') %>"><%= title %></a></li>
+           <% }); %>
          </ul> 
        </div>
      </div>
@@ -48,23 +49,6 @@
  </div>
 
     <div class="container">
-
-
-<!-- Masthead
-================================================== -->
-<header class="jumbotron subhead" id="overview">
-  <h1>Journal</h1>
-  <p class="lead">A preview of changes in this swatch.</p>
-  <div class="subnav">
-    <ul class="nav nav-pills">
-      <li><a href="#typography">Typography</a></li>
-      <li><a href="#navbar">Navbar</a></li>
-      <li><a href="#buttons">Buttons</a></li>
-      <li><a href="#forms">Forms</a></li>
-      <li><a href="#miscellaneous">Miscellaneous</a></li>
-    </ul>
-  </div>
-</header>
 
 <%- body %>
 
@@ -79,10 +63,10 @@
     </div><!-- /container -->
 
 
-    <script src="js/jquery.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
 
-    <script src="js/sz.js"></script>
+    <script src="/js/sz.js"></script>
 
 
 
