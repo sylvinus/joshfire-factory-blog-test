@@ -1,0 +1,90 @@
+{
+  "name": "sylvainzimmer.com",
+  "fullName": "My personal homepage",
+  "version": "0.1.0",
+  "private":true,
+  "maintainers": [
+    {
+      "name": "Joshfire",
+      "email": "contact@joshfire.com",
+      "web": "http://www.joshfire.com" 
+    } 
+  ],
+  "dependencies": {
+    "requirejs":"2.0.1",
+    "request":"2.9.202",
+    "express":"2.5.9",
+    "ejs":"0.7.1"
+  },
+  "engines": {
+    "node": "0.6.x"
+  },
+  "joshfire":{
+    "datasources": {
+      "main": {
+        "title": "Main tabs",
+        "description": "Top-level page links",
+        "multiple":true
+      }
+    },
+    "options": {
+      "schema": {
+        "title":{
+          "title":"Main title",
+          "type":"string"
+        },
+        "maintabtitles": {
+          "title": "Tabs titles",
+          "type": "array",
+          "items": {
+            "title": "Tab title",
+            "type": "string"
+          }
+        },
+        "maintaburls": {
+          "title": "Tabs URLs",
+          "type": "array",
+          "items": {
+            "title": "Tab URL",
+            "type": "string"
+          }
+        },
+      },
+      "form":[
+        "title",
+        {
+          "type": "fieldset",
+          "legend": "Top-level tabs",
+          "items": [
+            {
+              "type": "tabarray",
+              "items": [
+                {
+                  "type": "section",
+                  "legend": "{{value}}",
+                  "items": [
+                    {
+                      "key": "maintabtitles[]",
+                      "valueInLegend": true,
+                      "value": "Tab {{idx}}"
+                    },
+                    {
+                      "title": "Tab URL",
+                      "description": "E.g. /about, /blog, ...",
+                      "key": "maintaburls[]"
+                    },
+                    {
+                      "title": "Tab data source",
+                      "description": "Any type of datasources accepted.",
+                      "key": "datasources.main[]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
