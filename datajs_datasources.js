@@ -4179,11 +4179,13 @@ define('databases/wordpress/posts',[
 
       /** Send the query **/
       rssconverter.find(query, function(err, data) {
+
+      	if (!data || err) return callback(err);
+
         /** Limit the number of entries if necessary **/
-        if(query.filter.quantity && !isNaN(query.filter.quantity) && parseInt(query.filter.quantity))
+        if(query.filter.quantity && !isNaN(query.filter.quantity) && parseInt(query.filter.quantity)) 
           data.entries = data.entries.splice(0, query.filter.quantity);
         
-      console.log("Q",query,data);
         callback(err, data);
       });
     }
