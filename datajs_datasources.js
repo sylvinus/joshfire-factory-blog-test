@@ -4092,6 +4092,8 @@ define('databases/wordpress/posts',[
      */
     find: function(query, callback) {
 
+      //Make a copy
+      query = JSON.parse(JSON.stringify(query));
 
       if(!query.filter || !query.filter.url){
         rssconverter.find(query, function(err, data) {
