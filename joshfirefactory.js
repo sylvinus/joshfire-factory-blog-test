@@ -1,7 +1,7 @@
 
 var _ = require("underscore"),
     request = require('request'),
-    requirejs = require('./datajs_requirejs'),
+    requirejs = require("requirejs"), //require('./datajs_requirejs'),
     querystring = require("querystring"),
     fs = require("fs");
 
@@ -10,7 +10,7 @@ var Joshfire = {};
 
 Joshfire.factory = {
   globalConfig: {"DATAVERSION":"1","DATAHOSTPORT":"localhost:40020","STATSHOSTPORT":"localhost:40023","HOSTPORT":"localhost:40021"},
-  config: {"app":{"id":"4fc877ec5d5e4c3813000004","icon":null,"logo":null,"name":"xx","version":"1.0"},"template":{"id":"4fd3715b31e9315e4800011e","name":"sylvainzimmer.com","version":"0.1.0","options":{"title":"Sylvain Zimmer","maintabtitles":["Blog"],"maintaburls":["/*"]}}},
+  config: {"app":{"id":"4fc877ec5d5e4c3813000004","icon":null,"logo":null,"name":"xx","version":"1.0"},"template":{"id":"4fd3715b31e9315e4800011e","name":"sylvainzimmer.com","version":"0.1.0","options":{"title":"Sylvain Zimmer","maintabtitles":["Blog","Projects"],"maintaburls":["/*","/projects"]}}},
   device: {"type":"desktop"},
   plugins: {}
 };
@@ -195,7 +195,9 @@ Joshfire.datajs = {};
 
 
 
-
+global.define = requirejs.define;
+require("./datajs_datasources.js");
+global.define = null;
 
 /* Client shim! */
 var dbrequire = requirejs.config({
@@ -203,7 +205,6 @@ var dbrequire = requirejs.config({
   nodeRequire: require,
   context:"dbrequire"
 });
-
 
 (function (require) {
 
