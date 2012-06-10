@@ -34,10 +34,9 @@ _.chain(options.maintaburls).sortBy(function(x) {return -x.length;}).each(functi
     
     var ds = Joshfire.factory.getDataSource("main").children[idx];
 
-    var query = {filter:{}};
+    var query = ds.config.query;
     if (url.match(/\*/)) {
       query.filter.path = req.params[0];
-      query.filter.url = ds.config.query.filter.url;
     }
     
     ds.find(query,function(err,data) {

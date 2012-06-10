@@ -1,7 +1,7 @@
 
 var _ = require("underscore"),
     request = require('request'),
-    requirejs = require("requirejs"), //require('./datajs_requirejs'),
+    requirejs = require("requirejs"),
     querystring = require("querystring"),
     fs = require("fs");
 

@@ -4,7 +4,7 @@
 	<% entry.author; %>
 	<% entry.datePublished; %>
 
-	<h2><a href="<%= entry.url.replace("http://"+dataquery.filter.url,"") %>"><%= entry.name %></a></h2>
+	<h2><a href="<%= (entry.url || "").replace("http://"+dataquery.filter.url,"") %>"><%= entry.name %></a></h2>
 
 	<%- entry.articleBody %>
 <% }); %>

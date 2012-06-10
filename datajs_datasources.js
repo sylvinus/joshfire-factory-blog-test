@@ -3750,6 +3750,14 @@ define('runtime-nodejs/rssconverter',[
             value = item.attribs['rdf:about'];
           }
           if (value) {
+
+            //remove Google Analytics utm_* tracking parameters from feeds
+            if (value.indexOf("?")>=0) {
+              var qs = value.substring(value.indexOf("?")+1);
+              //regex from http://stackoverflow.com/questions/1842681/regular-expression-to-remove-one-parameter-from-query-string
+              for (var i=0;i<2;i++) qs = qs.replace(/&utm_([a-z]+)(\=[^&]*)?(?=&|$)|^utm_([a-z]+)(\=[^&]*)?(&|$)/g,"");
+              value = value.substring(0,value.indexOf("?")+((qs && qs.substring(0,1)!="#")?1:0)+qs);
+            }
             ret.url = value;
           }
 
