@@ -11,7 +11,7 @@ TODO
  - DS cache!
  - CSS update
  - Author/dates
- - Pagination
+ - Link to categories
  - SEO check
  - Tags
  - Rewrite projects page
