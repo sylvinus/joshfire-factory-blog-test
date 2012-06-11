@@ -128,8 +128,7 @@ define('databases/static/post',[], function () {
 /* RequireJS plugin */
 define('datajslib',{
     normalize: function (name, normalize) {
-        if (name=="jquery" || name.match(/^runtime\-(nodejs|browser)/)) return name;
-        console.log("LIB",name,normalize("runtime-nodejs/"+name));
+        if (name=="jquery" || name.match(/^runtime\-nodejs/)) return name;
         return normalize("runtime-nodejs/"+name);
     },
     load: function (name, req, load, config) {
@@ -380,7 +379,7 @@ define('datajslib',{
     root['JSONForm'].setDefaultValues = setDefaultValues;
   }
 })();
-define('runtime-nodejs/http',["request"], function (request) {
+define('runtime-nodejs/http',["request", "querystring"], function (request, querystring) {
 
   // Used to generate unique number for JSON callback function name
   var callbackSeed = (new Date()).getTime();
@@ -410,10 +409,21 @@ define('runtime-nodejs/http',["request"], function (request) {
       };
 
       if (params.data) {
-        rq.body = params.data; //serialize?
-        rq.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      }
-      else {
+        if (rq.method=="POST") {
+          if (typeof params.data=="string") {
+            rq.body = params.data;
+          } else {
+            rq.body = querystring.stringify(params.data);
+          }
+          rq.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        } else {
+          if (typeof params.data=="string") {
+            rq.body = querystring.parse(params.data);
+          } else {
+            rq.qs = params.data;
+          }
+        }
+      } else {
         rq.headers['Content-Length'] = '0';
       }
 
@@ -464,9 +474,7 @@ define('runtime-nodejs/http',["request"], function (request) {
       return true;
     }
   };
-
 });
-
 /**
  * @fileoverview Provides a method to decode a string that contains HTML
  * entities. The method can also be used with XML encoded strings.
@@ -3755,9 +3763,14 @@ define('runtime-nodejs/rssconverter',[
             if (value.indexOf("?")>=0) {
               var qs = value.substring(value.indexOf("?")+1);
               //regex from http://stackoverflow.com/questions/1842681/regular-expression-to-remove-one-parameter-from-query-string
-              for (var i=0;i<2;i++) qs = qs.replace(/&utm_([a-z]+)(\=[^&]*)?(?=&|$)|^utm_([a-z]+)(\=[^&]*)?(&|$)/g,"");
-              value = value.substring(0,value.indexOf("?")+((qs && qs.substring(0,1)!="#")?1:0)+qs);
+              for (var i=0;i<2;i++) {
+                qs = qs.replace(/&utm_([a-z]+)(\=[^&]*)?(?=&|$)|^utm_([a-z]+)(\=[^&]*)?(&|$)/g,"");
+              }
+              var length = value.indexOf("?") +
+                ((qs && (qs.substring(0,1) !== "#")) ? 1 : 0);
+              value = value.substring(0, length) + qs;
             }
+
             ret.url = value;
           }
 
@@ -3994,11 +4007,6 @@ define('databases/wordpress/posts',[
             "description": "Path of the single post or page you want to fetch",
             "type":"string"
           },
-          "quantity": {
-            "title": "Quantity",
-            "description": "The maximum number of posts to display. Defaults to the maximum of posts available. Note that it cannot exceed the maximum set by the owner of the blog.",
-            "type": "string"
-          },
           "categories": {
             "title": "Category name or ID(s)",
             "description": "Either a category name or a list of coma separated category IDs.",
@@ -4022,7 +4030,6 @@ define('databases/wordpress/posts',[
         },
         "form": [
           "url",
-          "quantity",
           "search",
           {
             "type": "selectfieldset",
@@ -4100,28 +4107,28 @@ define('databases/wordpress/posts',[
      */
     find: function(query, callback) {
 
-      //Make a copy
-      query = JSON.parse(JSON.stringify(query));
+      if (!query.limit) query.limit = 10;
+      if (!query.skip) query.skip = 0;
 
-      if(!query.filter || !query.filter.url){
-        rssconverter.find(query, function(err, data) {
-          callback(err, data);
-        });
-        return false;
+      //Make a copy
+      var filter = JSON.parse(JSON.stringify(query.filter));
+
+      if(!filter || !filter.url){
+        return callback(null,[]);
       }
 
       var uniquepattern = false,
-          baseUrl = query.filter.url,
+          baseUrl = filter.url,
           categoriesFilter = '&cat=',
           tagsFilter = '&tag=',
           searchFilter = '&s=';
 
       // If we want to fetch only one page/post
-      if (query.filter.path) {
-        query.filter.quantity = 1;
+      if (filter.path) {
+        filter.limit = 1;
 
         // Luckily, any wordpress post or page RDF feed seems to contain the full page content.
-        query.filter.url = query.filter.url.replace(/\/$/,"") + query.filter.path.replace(/^(\/)?/,"/") + "?feed=rdf";
+        filter.url = filter.url.replace(/\/$/,"") + filter.path.replace(/^(\/)?/,"/") + "?feed=rdf";
 
       // All the other parameters are for feeds
       } else {
@@ -4130,9 +4137,9 @@ define('databases/wordpress/posts',[
         * Loop on the filters and transform what's written into URL
         * readable params for each filter.
         **/
-        _.each(query.filter, function(val, key) {
+        _.each(filter, function(val, key) {
           /** Remove white spaces **/
-          val = val.replace(/\s/g, '');
+          if (typeof val == "string") val = val.replace(/\s/g, '');
 
           if(key == 'tags') {
             /** Single ID or ID list(coma) **/
@@ -4142,7 +4149,7 @@ define('databases/wordpress/posts',[
             /** category name (url pattern changes) **/
             else {
               uniquepattern = true;
-              query.filter.url = baseUrl+'/tag/'+val+'/feed';
+              filter.url = baseUrl+'/tag/'+val+'/feed';
             }
           }
 
@@ -4154,7 +4161,7 @@ define('databases/wordpress/posts',[
             /** category name (url pattern changes) **/
             else {
               uniquepattern = true;
-              query.filter.url = baseUrl+'/category/'+val+'/feed';
+              filter.url = baseUrl+'/category/'+val+'/feed';
             }
           }
 
@@ -4179,25 +4186,54 @@ define('databases/wordpress/posts',[
         
         /** Construct the full URL by appending the parsed params **/
         /** Uniquepattern is triggered when a different, exclusive URL form is used **/
-        if(query.filter.url && !uniquepattern) {
-          query.filter.url += '?dummyparam=1'+categoriesFilter+tagsFilter+searchFilter+'&feed=rss2';
+        if(filter.url && !uniquepattern) {
+          filter.url += '?dummyparam=1'+categoriesFilter+tagsFilter+searchFilter+'&feed=rss2';
         }
         else if(uniquepattern) {
-          query.filter.url += '?dummyparam=1'+searchFilter;
+          filter.url += '?dummyparam=1'+searchFilter;
         }
       }
 
-      /** Send the query **/
-      rssconverter.find(query, function(err, data) {
+      var baseFilterUrl = filter.url;
 
-      	if (!data || err) return callback(err);
+      var fetchedItems = [];
+      var itemsPerPage = 10;
+      var totalToFetch = query.skip+query.limit;
+      var fetchMore = function(page, stillToFetch, cb) {
 
-        /** Limit the number of entries if necessary **/
-        if(query.filter.quantity && !isNaN(query.filter.quantity) && parseInt(query.filter.quantity)) 
-          data.entries = data.entries.splice(0, query.filter.quantity);
-        
-        callback(err, data);
+        if (page>1) filter.url = baseFilterUrl+"&paged="+page;
+
+        rssconverter.find({filter:filter}, function(err, data) {
+          if (err) return cb(err);
+          if (!data || !data.entries) return cb("empty data");
+
+          fetchedItems = fetchedItems.concat(data.entries);
+
+          // discover the feed length
+          if (page==1) {
+            itemsPerPage = data.entries.length;
+
+            // Are we skipping so much that we could avoid requesting some pages?
+            if (query.skip && query.skip >= itemsPerPage*2) {
+              page=Math.floor(query.skip/itemsPerPage);
+              for (var i=0;i<(page-1)*itemsPerPage;i++) fetchedItems.push(null); //pushing dummy items is the most simple hack
+              stillToFetch-=(page-1)*itemsPerPage;
+            }
+          }
+          if (data.entries.length<stillToFetch && data.entries.length>0) {
+            fetchMore(page+1,stillToFetch-data.entries.length,cb);
+          } else {
+            cb(null);
+          }
+          
+        });
+
+      };
+
+      fetchMore(1, totalToFetch,function(err) {
+        return callback(err, {"entries":fetchedItems.slice(query.skip,query.skip+query.limit)});
       });
+      
     }
   };
 });

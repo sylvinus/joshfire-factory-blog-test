@@ -8,3 +8,17 @@
 
 	<%- entry.articleBody %>
 <% }); %>
+
+<ul class="pager">
+
+  <li class="previous">
+    <a href="<%= pageparams.navbase %>/page/<%= pageparams.page+1 %>/">&larr; Older</a>
+  </li>
+
+  <% if (pageparams.page>1) { %>
+	  <li class="next">
+	    <a href="<%= pageparams.navbase %><%= (pageparams.page==2)?"":("/page/"+(pageparams.page-1)) %>/">Newer &rarr;</a>
+	  </li>
+  <% } %>
+
+</ul>

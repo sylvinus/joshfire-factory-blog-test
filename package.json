@@ -42,6 +42,11 @@
             "type": "string"
           }
         },
+        "perpage": {
+          "title":"Posts per page",
+          "type":"number",
+          "default":10
+        },
         "maintaburls": {
           "title": "Tabs URLs",
           "type": "array",
@@ -53,6 +58,7 @@
       },
       "form":[
         "title",
+        "perpage",
         {
           "type": "fieldset",
           "legend": "Top-level tabs",

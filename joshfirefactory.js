@@ -10,7 +10,7 @@ var Joshfire = {};
 
 Joshfire.factory = {
   globalConfig: {"DATAVERSION":"1","DATAHOSTPORT":"localhost:40020","STATSHOSTPORT":"localhost:40023","HOSTPORT":"localhost:40021"},
-  config: {"app":{"id":"4fc877ec5d5e4c3813000004","icon":null,"logo":null,"name":"xx","version":"1.0"},"template":{"id":"4fd3715b31e9315e4800011e","name":"sylvainzimmer.com","version":"0.1.0","options":{"title":"Sylvain Zimmer","maintabtitles":["Blog","Projects"],"maintaburls":["/*","/projects"]}}},
+  config: {"app":{"id":"4fc877ec5d5e4c3813000004","icon":null,"logo":null,"name":"xx","version":"1.0"},"template":{"id":"4fd3715b31e9315e4800011e","name":"sylvainzimmer.com","version":"0.1.0","options":{"title":"Sylvain Zimmer","perpage":10,"maintabtitles":["Blog","Projects"],"maintaburls":["/*","/projects"]}}},
   device: {"type":"desktop"},
   plugins: {}
 };

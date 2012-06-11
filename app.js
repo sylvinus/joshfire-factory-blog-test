@@ -30,13 +30,39 @@ _.chain(options.maintaburls).sortBy(function(x) {return -x.length;}).each(functi
 
   app.get(url, function(req, res){
 
+    var pageparams = {
+      page:1,
+      navbase:""
+    };
+
     // This bit is still site-specific :/
     
     var ds = Joshfire.factory.getDataSource("main").children[idx];
 
-    var query = ds.config.query;
+    var query = JSON.parse(JSON.stringify(ds.config.query));
+
     if (url.match(/\*/)) {
-      query.filter.path = req.params[0];
+
+      var isCategory = req.params[0].match(/^category\/([a-z0-9_\-]+)/i);
+      if (isCategory) {
+        query.filter.categories = isCategory[1];
+        pageparams.category = isCategory[1];
+        pageparams.navbase = "/"+isCategory[0];
+        //strip the category component from the url, it might be paginated also
+        req.params[0] = req.params[0].substring(isCategory[0].length);
+      }
+
+      var isPagination = req.params[0].match(/^(\/)?page\/([0-9]+)/);
+      if (isPagination) {
+        pageparams.page = parseInt(isPagination[2],10);
+        query.skip=Math.max(0,(parseInt(isPagination[2],10)-1)*options.perpage);
+        query.limit=options.perpage;
+      }
+
+      if (!isCategory && !isPagination) {
+        query.filter.path = req.params[0];
+      }
+      
     }
     
     ds.find(query,function(err,data) {
@@ -47,6 +73,7 @@ _.chain(options.maintaburls).sortBy(function(x) {return -x.length;}).each(functi
 
       res.render('mainpage', _.extend({
         mainidx:idx,
+        pageparams:pageparams,
         datasource:ds,
         dataquery:query,
         data:data
