@@ -4141,7 +4141,7 @@ define('databases/wordpress/posts',[
 
       // If we want to fetch only one page/post
       if (filter.path) {
-        filter.limit = 1;
+        query.limit = 1;
 
         // Luckily, any wordpress post or page RDF feed seems to contain the full page content.
         filter.url = filter.url.replace(/\/$/,"") + filter.path.replace(/^(\/)?/,"/") + "?feed=rdf";
