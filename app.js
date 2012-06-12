@@ -1,6 +1,6 @@
 var express = require('express'),
 	_ = require("underscore"),
-	JoshfireFactory = require("../joshfirefactory-node");
+	JoshfireFactory = require("joshfirefactory");
 
 
 var app = express.createServer();
@@ -13,8 +13,7 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
-
-JoshfireFactory.bootstrap({appid:"4fc877ec5d5e4c3813000004",host:"joshfire:firejosh@localhost:40021",deviceid:"desktop"},function(err, Joshfire) {
+JoshfireFactory.bootstrap({save:true,appid:"4fc877ec5d5e4c3813000004",host:"joshfire:firejosh@localhost:40021",deviceid:"desktop"},function(err, Joshfire) {
 
   if (err) return console.error(err);
 
@@ -56,7 +55,7 @@ JoshfireFactory.bootstrap({appid:"4fc877ec5d5e4c3813000004",host:"joshfire:firej
           //strip the category component from the url, it might be paginated also
           req.params[0] = req.params[0].substring(isCategory[0].length);
         }
-        
+
         var isPagination = req.params[0].match(/^(\/)?page\/([0-9]+)/);
         if (isPagination) {
           pageparams.page = parseInt(isPagination[2],10);
@@ -69,12 +68,12 @@ JoshfireFactory.bootstrap({appid:"4fc877ec5d5e4c3813000004",host:"joshfire:firej
         }
         
       }
-      console.log(query);
+      console.log("Query:",query);
       
       ds.find(query,function(err,data) {
 
         if (err) {
-          throw new Error(err);
+          return res.send("Internal error",500);
         }
 
         res.render('mainpage', _.extend({
