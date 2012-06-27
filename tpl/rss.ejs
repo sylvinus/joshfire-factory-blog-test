@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+<%
+
+	var channel = [
+		{ title: {_cdata:options.title}},
+		{ description: {_cdata:options.title}},
+		{ link: options.link||""},
+		{ generator: "http://factory.joshfire.com"},
+		{ lastBuildDate: new Date().toGMTString()}
+	];
+
+	_.each(data.entries,function(entry,i) {
+
+		channel.push({item:[
+			{title:entry.name},
+			{link:entry.url},
+			{pubDate: new Date(entry.datePublished).toGMTString()}, //TODO!
+			{description:{_cdata:entry.articleBody}}
+		]});
+	});
+	console.log(channel);
+%>
+<%- xml(channel) %>
+</rss>

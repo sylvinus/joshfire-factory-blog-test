@@ -1,5 +1,6 @@
 var express = require('express'),
 	_ = require("underscore"),
+  xml = require("xml"),
 	JoshfireFactory = require("joshfirefactory");
 
 
@@ -22,6 +23,7 @@ JoshfireFactory.bootstrap({save:true,appid:"4fc877ec5d5e4c3813000004",host:"josh
   var baseTplVars = {
     options: options,
     _:_,
+    xml:xml,
     Joshfire: Joshfire
   };
 
@@ -76,11 +78,21 @@ JoshfireFactory.bootstrap({save:true,appid:"4fc877ec5d5e4c3813000004",host:"josh
           return res.send("Internal error",500);
         }
 
-        res.render('mainpage', _.extend({
+        var tpl = "mainpage";
+        var dolayout = true;
+
+        if (req.query.feed=="rss" || req.query.feed=="rss2") {
+          tpl = "rss";
+          dolayout = false;
+          res.header("Content-Type","text/xml; charset=UTF-8");
+        }
+
+        res.render(tpl, _.extend({
           mainidx:idx,
           pageparams:pageparams,
           datasource:ds,
           dataquery:query,
+          layout:dolayout,
           data:data
         },baseTplVars));
       });

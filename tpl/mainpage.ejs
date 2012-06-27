@@ -11,9 +11,11 @@
 
 <ul class="pager">
 
-  <li class="previous">
-    <a href="<%= pageparams.navbase %>/page/<%= pageparams.page+1 %>/">&larr; Older</a>
-  </li>
+  <% if (data.entries.length>1) { %>
+	  <li class="previous">
+	    <a href="<%= pageparams.navbase %>/page/<%= pageparams.page+1 %>/">&larr; Older</a>
+	  </li>
+  <% } %>
 
   <% if (pageparams.page>1) { %>
 	  <li class="next">

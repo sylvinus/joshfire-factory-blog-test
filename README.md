@@ -6,7 +6,6 @@ My personal blog
 TODO
 ====
 
- - RSS feed
  - Comments / Disqus
  - DS cache!
  - CSS update
@@ -17,5 +16,4 @@ TODO
  - Rewrite projects page
  - favicon
  - Plugin support
- - Move joshfirefactory in custom module
  - Heroku deploy in factory
