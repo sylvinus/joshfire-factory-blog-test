@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
 <%
 
 	var channel = [
 		{ title: {_cdata:options.title}},
 		{ description: {_cdata:options.title}},
-		{ link: options.link||""},
+		{ link: "http://"+host},
+		{ "atom:link":{_attr:{href:"http://"+host+"/?feed=rss2",rel:"self",type:"application/rss+xml"}}}, //TODO right href!
 		{ generator: "http://factory.joshfire.com"},
 		{ lastBuildDate: new Date().toGMTString()}
 	];
 
 	_.each(data.entries,function(entry,i) {
 
+		var url = (entry.url || "").replace("http://"+dataquery.filter.url.replace(/\/$/,""),"http://"+host);
+
 		channel.push({item:[
 			{title:entry.name},
-			{link:entry.url},
+			{link:url},
+			{guid:url},
 			{pubDate: new Date(entry.datePublished).toGMTString()}, //TODO!
 			{description:{_cdata:entry.articleBody}}
 		]});

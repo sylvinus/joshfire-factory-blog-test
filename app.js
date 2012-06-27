@@ -93,6 +93,7 @@ JoshfireFactory.bootstrap({save:true,appid:"4fc877ec5d5e4c3813000004",host:"josh
           datasource:ds,
           dataquery:query,
           layout:dolayout,
+          host:req.header('host'),
           data:data
         },baseTplVars));
       });
