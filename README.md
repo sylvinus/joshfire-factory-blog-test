@@ -1,7 +1,7 @@
-sylvainzimmer.com
-=================
+joshfire-factory-blog-test
+==========================
 
-My personal blog
+A personal blog
 
 TODO
 ====
